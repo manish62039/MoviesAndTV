@@ -1,8 +1,10 @@
 package com.example.moviestv.data.model.movie
 
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "movies_table")
 data class Movie(
     @SerializedName("adult")
     val adult: Boolean,

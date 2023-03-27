@@ -1,8 +1,10 @@
 package com.example.moviestv.data.model.tv_show
 
 
+import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "TVShows_Table")
 data class TVShow(
     @SerializedName("backdrop_path")
     val backdropPath: String,
