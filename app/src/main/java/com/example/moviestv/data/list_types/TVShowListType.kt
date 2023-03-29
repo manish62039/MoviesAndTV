@@ -1,4 +1,4 @@
-package com.example.moviestv.data.repository.list_types
+package com.example.moviestv.data.list_types
 
 enum class TVShowListType(val TYPE: String) {
     LATEST("latest_tv_show"),

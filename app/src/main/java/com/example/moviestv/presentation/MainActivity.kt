@@ -9,9 +9,16 @@ import com.example.moviestv.data.api.TMDBService
 import com.example.moviestv.data.repository.MovieRepositoryImpl
 import com.example.moviestv.data.repository.datasourceImpl.movie.MovieCacheDataSourceImpl
 import com.example.moviestv.data.repository.datasourceImpl.movie.MovieWebDataSourceImpl
-import com.example.moviestv.data.repository.list_types.MovieListType
+import com.example.moviestv.data.list_types.MovieListType
+import com.example.moviestv.data.list_types.TVShowListType
+import com.example.moviestv.data.repository.TVShowRepositoryImpl
+import com.example.moviestv.data.repository.datasource.tv_show.TVShowCacheDataSource
+import com.example.moviestv.data.repository.datasource.tv_show.TVShowsWebDataSource
+import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowCacheDataSourceImpl
+import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowsWebDataSourceImpl
 import com.example.moviestv.domain.use_cases.movie.GetMoviesListUseCase
 import com.example.moviestv.domain.use_cases.movie.UpdateMoviesListUseCase
+import com.example.moviestv.domain.use_cases.tv_shows.GetTVShowUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
@@ -33,26 +40,25 @@ class MainActivity : AppCompatActivity() {
 
         val tmdbService = retrofit.create(TMDBService::class.java)
 
-        val cacheDataSource = MovieCacheDataSourceImpl()
-        val webDataSource = MovieWebDataSourceImpl(tmdbService)
+        val cacheDataSource = TVShowCacheDataSourceImpl()
+        val webDataSource = TVShowsWebDataSourceImpl(tmdbService)
 
-        val repository = MovieRepositoryImpl(cacheDataSource, webDataSource)
-        val getMovieUseCase = GetMoviesListUseCase(repository)
-        val updateMoviesUseCase = UpdateMoviesListUseCase(repository)
+        val repository = TVShowRepositoryImpl(cacheDataSource, webDataSource)
+        val getTVShowUseCase = GetTVShowUseCase(repository)
 
         CoroutineScope(IO).launch {
-            val listType = MovieListType.POPULAR
+            val listType = TVShowListType.LATEST
 
             //Testing API
-            getMovieUseCase.execute(listType).collect {
-                Log.i("MovieTAG", "${listType}: $it")
+            getTVShowUseCase.execute(listType).collect {
+                Log.i("TVShowTAG", "${listType}: $it")
             }
 
             delay(3000)
 
             //Testing Cache
-            getMovieUseCase.execute(listType).collect() {
-                Log.i("MovieTAG", "${listType}: $it")
+            getTVShowUseCase.execute(listType).collect() {
+                Log.i("TVShowTAG", "${listType}: $it")
             }
         }
 

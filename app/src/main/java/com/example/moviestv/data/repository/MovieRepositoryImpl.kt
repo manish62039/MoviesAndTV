@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.moviestv.data.model.movie.Movie
 import com.example.moviestv.data.repository.datasource.movie.MovieCacheDataSource
 import com.example.moviestv.data.repository.datasource.movie.MovieWebDataSource
-import com.example.moviestv.data.repository.list_types.MovieListType
+import com.example.moviestv.data.list_types.MovieListType
 import com.example.moviestv.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
