@@ -2,10 +2,8 @@ package com.example.moviestv.data.repository
 
 import android.util.Log
 import com.example.moviestv.data.model.movie.Movie
-import com.example.moviestv.data.model.movie.MovieList
-import com.example.moviestv.data.repository.datasource.MovieCacheDataSource
-import com.example.moviestv.data.repository.datasource.MovieWebDataSource
-import com.example.moviestv.data.repository.datasource.TVShowCacheDataSource
+import com.example.moviestv.data.repository.datasource.movie.MovieCacheDataSource
+import com.example.moviestv.data.repository.datasource.movie.MovieWebDataSource
 import com.example.moviestv.data.repository.list_types.MovieListType
 import com.example.moviestv.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +34,8 @@ class MovieRepositoryImpl(
         if (list.isNullOrEmpty()) {
             list = getMoviesFromWeb(listType)
             movieCacheDataSource.saveMovies(listType, list)
+        } else {
+            Log.i("MovieTAG", "getMoviesFromCache: Size: ${list.size}")
         }
         return list
     }
@@ -46,15 +46,11 @@ class MovieRepositoryImpl(
         val list = mutableListOf<Movie>()
         if (body != null) {
             val movies = body.movies
-            if (movies == null) {
-                Log.i("MovieTAG", "Error: Movies list is null")
-            } else if (movies.isEmpty()) {
-                Log.i("MovieTAG", "Error: Movies list is empty")
-            } else {
-                Log.i("MovieTAG", "getMoviesFromWeb: Adding movie list size: ${movies.size}")
-                list.addAll(body.movies)
+            if (movies != null) {
+                list.addAll(movies)
             }
         }
+        Log.i("MovieTAG", "getMoviesFromWeb: Size: ${list.size}")
         return list
     }
 

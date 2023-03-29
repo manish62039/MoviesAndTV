@@ -1,13 +1,20 @@
-package com.example.moviestv.data.repository.datasourceImpl
+package com.example.moviestv.data.repository.datasourceImpl.tv_show
 
-import com.example.moviestv.data.model.movie.Movie
 import com.example.moviestv.data.model.tv_show.TVShow
-import com.example.moviestv.data.repository.datasource.TVShowCacheDataSource
+import com.example.moviestv.data.repository.datasource.tv_show.TVShowCacheDataSource
+import com.example.moviestv.data.repository.list_types.TVShowListType
 
 class TVShowCacheDataSourceImpl : TVShowCacheDataSource {
     private var tvShowsMap = HashMap<String, MutableList<TVShow>?>()
+    override fun getTvShowsList(tvShowListType: TVShowListType): List<TVShow>? {
+        TODO("Not yet implemented")
+    }
 
-    override fun getLatestTVShows(): List<TVShow>? {
+    override fun saveTVShowsList(tvShowListType: TVShowListType, list: List<TVShow>) {
+        TODO("Not yet implemented")
+    }
+
+/*    override fun getLatestTVShows(): List<TVShow>? {
         return tvShowsMap[ListTypes.LATEST.TYPE]
     }
 
@@ -50,11 +57,6 @@ class TVShowCacheDataSourceImpl : TVShowCacheDataSource {
             list.clear()
 
         list.addAll(tvShowsList)
-    }
+    }*/
 
-    enum class ListTypes(val TYPE: String) {
-        LATEST("latest_tv_shows"),
-        POPULAR("popular_tv_shows"),
-        TOP_RATED("top_rated_tv_shows"),
-    }
 }

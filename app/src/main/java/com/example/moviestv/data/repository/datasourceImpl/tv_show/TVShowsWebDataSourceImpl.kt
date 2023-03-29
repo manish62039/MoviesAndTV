@@ -1,9 +1,9 @@
-package com.example.moviestv.data.repository.datasourceImpl
+package com.example.moviestv.data.repository.datasourceImpl.tv_show
 
 import com.example.moviestv.BuildConfig
 import com.example.moviestv.data.api.TMDBService
 import com.example.moviestv.data.model.tv_show.TVShowList
-import com.example.moviestv.data.repository.datasource.TVShowsWebDataSource
+import com.example.moviestv.data.repository.datasource.tv_show.TVShowsWebDataSource
 import retrofit2.Response
 
 class TVShowsWebDataSourceImpl(private val tmdbService: TMDBService) : TVShowsWebDataSource {

@@ -1,10 +1,10 @@
-package com.example.moviestv.data.repository.datasourceImpl
+package com.example.moviestv.data.repository.datasourceImpl.movie
 
 import android.util.Log
 import com.example.moviestv.BuildConfig
 import com.example.moviestv.data.api.TMDBService
 import com.example.moviestv.data.model.movie.MovieList
-import com.example.moviestv.data.repository.datasource.MovieWebDataSource
+import com.example.moviestv.data.repository.datasource.movie.MovieWebDataSource
 import com.example.moviestv.data.repository.list_types.MovieListType
 import retrofit2.Response
 

@@ -1,4 +1,4 @@
-package com.example.moviestv.data.repository.datasource
+package com.example.moviestv.data.repository.datasource.tv_show
 
 import com.example.moviestv.data.model.movie.Movie
 import com.example.moviestv.data.model.movie.MovieList
