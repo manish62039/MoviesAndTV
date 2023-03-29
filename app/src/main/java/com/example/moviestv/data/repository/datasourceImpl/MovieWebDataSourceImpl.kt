@@ -9,30 +9,34 @@ import com.example.moviestv.data.repository.list_types.MovieListType
 import retrofit2.Response
 
 class MovieWebDataSourceImpl(private val tmdbService: TMDBService) : MovieWebDataSource {
-    override suspend fun getMoviesList(listType: String): Response<MovieList> {
+    override suspend fun getMoviesList(listType: MovieListType): Response<MovieList> {
         val k = BuildConfig.API_KEY
 
         when (listType) {
-            MovieListType.LATEST.TYPE ->
+            MovieListType.LATEST ->
                 return tmdbService.getLatestMovies(k)
 
-            MovieListType.NOW_PLAYING.TYPE ->
+            MovieListType.NOW_PLAYING ->
                 return tmdbService.getNowPlayingMovies(k)
 
-            MovieListType.TOP_RATED.TYPE ->
+            MovieListType.TOP_RATED ->
                 return tmdbService.getTopRatedMovies(k)
 
-            MovieListType.UPCOMING.TYPE ->
+            MovieListType.UPCOMING ->
                 return tmdbService.getUpcomingMovies(k)
+
+            else -> {
+                //Invalid list Type
+                if (listType != MovieListType.POPULAR) {
+                    Log.i("MovieTAG", "getLatestMoviesList: Invalid List Type")
+                }
+
+                //Default
+                return tmdbService.getPopularMovies(k)
+            }
         }
 
-        //Invalid list Type
-        if (listType != MovieListType.POPULAR.TYPE) {
-            Log.i("MovieTAG", "getLatestMoviesList: Invalid List Type")
-        }
 
-        //Default
-        return tmdbService.getPopularMovies(k)
     }
 
 }

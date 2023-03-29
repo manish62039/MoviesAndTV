@@ -4,14 +4,11 @@ package com.example.moviestv.data.model.tv_show
 import androidx.room.Entity
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "TVShows_Table")
 data class TVShow(
     @SerializedName("backdrop_path")
     val backdropPath: String,
     @SerializedName("first_air_date")
     val firstAirDate: String,
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>,
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")

@@ -12,7 +12,7 @@ class TVShowCacheDataSourceImpl : TVShowCacheDataSource {
     }
 
     override fun saveLatestTVShows(tvShowsList: List<TVShow>) {
-        var list = tvShowsMap[MovieCacheDataSourceImpl.ListTypes.LATEST.TYPE]
+        var list = tvShowsMap[ListTypes.LATEST.TYPE]
 
         if (list == null)
             list = mutableListOf()
@@ -27,7 +27,7 @@ class TVShowCacheDataSourceImpl : TVShowCacheDataSource {
     }
 
     override fun savePopularTVShows(tvShowsList: List<TVShow>) {
-        var list = tvShowsMap[MovieCacheDataSourceImpl.ListTypes.POPULAR.TYPE]
+        var list = tvShowsMap[ListTypes.POPULAR.TYPE]
 
         if (list == null)
             list = mutableListOf()
@@ -42,7 +42,7 @@ class TVShowCacheDataSourceImpl : TVShowCacheDataSource {
     }
 
     override fun saveTopRatedTVShows(tvShowsList: List<TVShow>) {
-        var list = tvShowsMap[MovieCacheDataSourceImpl.ListTypes.TOP_RATED.TYPE]
+        var list = tvShowsMap[ListTypes.TOP_RATED.TYPE]
 
         if (list == null)
             list = mutableListOf()
