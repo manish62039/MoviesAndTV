@@ -5,12 +5,14 @@ import com.example.moviestv.data.model.movie.Movie
 import com.example.moviestv.data.repository.datasource.movie.MovieCacheDataSource
 import com.example.moviestv.data.repository.datasource.movie.MovieWebDataSource
 import com.example.moviestv.data.list_types.MovieListType
+import com.example.moviestv.data.repository.datasource.movie.MovieLocalDataSource
 import com.example.moviestv.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class MovieRepositoryImpl(
     private val movieCacheDataSource: MovieCacheDataSource,
+    private val movieLocalDataSource: MovieLocalDataSource,
     private val movieWebDataSource: MovieWebDataSource
 ) : MovieRepository {
 
@@ -32,10 +34,21 @@ class MovieRepositoryImpl(
     private suspend fun getMoviesFromCache(listType: MovieListType): List<Movie> {
         var list = movieCacheDataSource.getMovies(listType)
         if (list.isNullOrEmpty()) {
-            list = getMoviesFromWeb(listType)
+            list = getMoviesListFromRoom(listType)
             movieCacheDataSource.saveMovies(listType, list)
         } else {
             Log.i("MovieTAG", "getMoviesFromCache: Size: ${list.size}")
+        }
+        return list
+    }
+
+    private suspend fun getMoviesListFromRoom(listType: MovieListType): List<Movie> {
+        var list = movieLocalDataSource.getMoviesList(listType)
+        if (list.isEmpty()) {
+            list = getMoviesFromWeb(listType)
+            movieLocalDataSource.saveMoviesList(listType, list)
+        } else {
+            Log.i("MovieTAG", "getMoviesListFromRoom: Size: ${list.size}")
         }
         return list
     }

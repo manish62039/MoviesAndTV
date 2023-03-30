@@ -3,9 +3,11 @@ package com.example.moviestv.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.room.Room
 import com.example.moviestv.BuildConfig
 import com.example.moviestv.R
 import com.example.moviestv.data.api.TMDBService
+import com.example.moviestv.data.db.MyDatabase
 import com.example.moviestv.data.repository.MovieRepositoryImpl
 import com.example.moviestv.data.repository.datasourceImpl.movie.MovieCacheDataSourceImpl
 import com.example.moviestv.data.repository.datasourceImpl.movie.MovieWebDataSourceImpl
@@ -14,6 +16,7 @@ import com.example.moviestv.data.list_types.TVShowListType
 import com.example.moviestv.data.repository.TVShowRepositoryImpl
 import com.example.moviestv.data.repository.datasource.tv_show.TVShowCacheDataSource
 import com.example.moviestv.data.repository.datasource.tv_show.TVShowsWebDataSource
+import com.example.moviestv.data.repository.datasourceImpl.movie.MovieLocalDataSourceImpl
 import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowCacheDataSourceImpl
 import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowsWebDataSourceImpl
 import com.example.moviestv.domain.use_cases.movie.GetMoviesListUseCase
@@ -26,6 +29,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,28 +42,31 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
+        val database =
+            Room.databaseBuilder(applicationContext, MyDatabase::class.java, "movies_and_tv")
+                .build()
+
+        val moviesDao = database.getMoviesDao()
+
         val tmdbService = retrofit.create(TMDBService::class.java)
 
-        val cacheDataSource = TVShowCacheDataSourceImpl()
-        val webDataSource = TVShowsWebDataSourceImpl(tmdbService)
+        val cacheDataSource = MovieCacheDataSourceImpl()
+        val localDataSource = MovieLocalDataSourceImpl(moviesDao)
+        val webDataSource = MovieWebDataSourceImpl(tmdbService)
 
-        val repository = TVShowRepositoryImpl(cacheDataSource, webDataSource)
-        val getTVShowUseCase = GetTVShowUseCase(repository)
+        val repository = MovieRepositoryImpl(cacheDataSource, localDataSource, webDataSource)
+        val getMoviesListUseCase = GetMoviesListUseCase(repository)
 
         CoroutineScope(IO).launch {
-            val listType = TVShowListType.LATEST
+            val listType = MovieListType.POPULAR
 
-            //Testing API
-            getTVShowUseCase.execute(listType).collect {
+            Log.i("MovieTAG", "ListType: ${listType.name}")
+
+            //Testing
+            getMoviesListUseCase.execute(listType).collect {
                 Log.i("TVShowTAG", "${listType}: $it")
             }
 
-            delay(3000)
-
-            //Testing Cache
-            getTVShowUseCase.execute(listType).collect() {
-                Log.i("TVShowTAG", "${listType}: $it")
-            }
         }
 
     }
