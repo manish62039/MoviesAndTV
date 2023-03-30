@@ -3,6 +3,7 @@ package com.example.moviestv.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.room.Room
 import com.example.moviestv.BuildConfig
 import com.example.moviestv.R
@@ -18,10 +19,12 @@ import com.example.moviestv.data.repository.datasource.tv_show.TVShowCacheDataSo
 import com.example.moviestv.data.repository.datasource.tv_show.TVShowsWebDataSource
 import com.example.moviestv.data.repository.datasourceImpl.movie.MovieLocalDataSourceImpl
 import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowCacheDataSourceImpl
+import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowsLocalDataSourceImpl
 import com.example.moviestv.data.repository.datasourceImpl.tv_show.TVShowsWebDataSourceImpl
 import com.example.moviestv.domain.use_cases.movie.GetMoviesListUseCase
 import com.example.moviestv.domain.use_cases.movie.UpdateMoviesListUseCase
 import com.example.moviestv.domain.use_cases.tv_shows.GetTVShowUseCase
+import com.example.moviestv.domain.use_cases.tv_shows.UpdateTVShowUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
@@ -46,24 +49,50 @@ class MainActivity : AppCompatActivity() {
             Room.databaseBuilder(applicationContext, MyDatabase::class.java, "movies_and_tv")
                 .build()
 
-        val moviesDao = database.getMoviesDao()
+//        val moviesDao = database.getMoviesDao()
+        val moviesDao = database.tvShowsDao()
 
         val tmdbService = retrofit.create(TMDBService::class.java)
 
-        val cacheDataSource = MovieCacheDataSourceImpl()
-        val localDataSource = MovieLocalDataSourceImpl(moviesDao)
-        val webDataSource = MovieWebDataSourceImpl(tmdbService)
+//        val cacheDataSource = MovieCacheDataSourceImpl()
+//        val localDataSource = MovieLocalDataSourceImpl(moviesDao)
+//        val webDataSource = MovieWebDataSourceImpl(tmdbService)
 
-        val repository = MovieRepositoryImpl(cacheDataSource, localDataSource, webDataSource)
-        val getMoviesListUseCase = GetMoviesListUseCase(repository)
+        val cacheDataSource = TVShowCacheDataSourceImpl()
+        val localDataSource = TVShowsLocalDataSourceImpl(moviesDao)
+        val webDataSource = TVShowsWebDataSourceImpl(tmdbService)
+
+//        val repository = MovieRepositoryImpl(cacheDataSource, localDataSource, webDataSource)
+//        val getMoviesListUseCase = GetMoviesListUseCase(repository)
+
+        val repository = TVShowRepositoryImpl(cacheDataSource, localDataSource, webDataSource)
+        val getTVShowsUseCase = GetTVShowUseCase(repository)
+        val updateTvShowUseCase = UpdateTVShowUseCase(repository)
+
+        Toast.makeText(applicationContext, "Starting...", Toast.LENGTH_SHORT).show()
+        Log.i("TVShowTAG", "onCreate: Staring...")
 
         CoroutineScope(IO).launch {
-            val listType = MovieListType.POPULAR
+            val listType = TVShowListType.TOP_RATED
 
-            Log.i("MovieTAG", "ListType: ${listType.name}")
+            Log.i("TVShowTAG", "ListType: ${listType.name}")
 
             //Testing
-            getMoviesListUseCase.execute(listType).collect {
+            getTVShowsUseCase.execute(listType).collect {
+                Log.i("TVShowTAG", "${listType}: $it")
+            }
+
+            delay(3000)
+
+            //Testing
+            getTVShowsUseCase.execute(listType).collect {
+                Log.i("TVShowTAG", "${listType}: $it")
+            }
+
+            delay(3000)
+
+            //Testing
+            updateTvShowUseCase.execute(listType).collect {
                 Log.i("TVShowTAG", "${listType}: $it")
             }
 

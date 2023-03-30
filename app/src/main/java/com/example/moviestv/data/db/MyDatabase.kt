@@ -7,9 +7,10 @@ import com.example.moviestv.data.model.movie.Movie
 import com.example.moviestv.data.model.tv_show.TVShow
 
 @Database(
-    entities = [Movie::class],
+    entities = [Movie::class, TVShow::class],
     version = 1,
 )
 abstract class MyDatabase : RoomDatabase() {
     abstract fun getMoviesDao(): MoviesDao
+    abstract fun tvShowsDao(): TVShowDao
 }
