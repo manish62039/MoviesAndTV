@@ -6,20 +6,15 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import com.example.moviestv.data.list_types.MovieListType
 import com.example.moviestv.data.list_types.TVShowListType
 import com.example.moviestv.domain.use_cases.movie.GetMoviesListUseCase
 import com.example.moviestv.domain.use_cases.movie.UpdateMoviesListUseCase
 import com.example.moviestv.domain.use_cases.tv_shows.GetTVShowUseCase
 import com.example.moviestv.domain.use_cases.tv_shows.UpdateTVShowUseCase
-import com.example.moviestv.presentation.MovieData
-import com.example.moviestv.presentation.TVShowsData
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import com.example.moviestv.presentation.data.MovieData
+import com.example.moviestv.presentation.data.TVShowsData
 
 class MainViewModel(
     private val app: Application,

@@ -1,4 +1,4 @@
-package com.example.moviestv.presentation
+package com.example.moviestv.presentation.data
 
 import com.example.moviestv.data.list_types.TVShowListType
 import com.example.moviestv.data.model.tv_show.TVShow

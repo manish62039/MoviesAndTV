@@ -31,17 +31,23 @@ import com.example.moviestv.presentation.fragments.MovieFragment
 import com.example.moviestv.presentation.fragments.TVShowFragment
 import com.example.moviestv.presentation.viewmodels.MainViewModel
 import com.example.moviestv.presentation.viewmodels.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var selectedFragment = -1
     private var fragments = arrayOfNulls<Fragment>(2)
-    private lateinit var factory: ViewModelFactory
+
+    @Inject
+    lateinit var factory: ViewModelFactory
+
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,86 +55,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val retrofit = Retrofit
-            .Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val database =
-            Room.databaseBuilder(applicationContext, MyDatabase::class.java, "movies_and_tv")
-                .build()
-
-        val moviesDao = database.getMoviesDao()
-        val tvShowsDao = database.tvShowsDao()
-
-        val tmdbService = retrofit.create(TMDBService::class.java)
-
-//        val cacheDataSource = MovieCacheDataSourceImpl()
-//        val localDataSource = MovieLocalDataSourceImpl(moviesDao)
-//        val webDataSource = MovieWebDataSourceImpl(tmdbService)
-
-        val tvShowCacheDataSource = TVShowCacheDataSourceImpl()
-        val tvShowsLocalDataSource = TVShowsLocalDataSourceImpl(tvShowsDao)
-        val tvShowsWebDataSource = TVShowsWebDataSourceImpl(tmdbService)
-
-        val movieCacheDataSource = MovieCacheDataSourceImpl()
-        val movieLocalDataSource = MovieLocalDataSourceImpl(moviesDao)
-        val movieWebDataSource = MovieWebDataSourceImpl(tmdbService)
-
-        val movieRepository =
-            MovieRepositoryImpl(movieCacheDataSource, movieLocalDataSource, movieWebDataSource)
-        val getMoviesListUseCase = GetMoviesListUseCase(movieRepository)
-        val updateMoviesListUseCase = UpdateMoviesListUseCase(movieRepository)
-
-        val tvShowRepository = TVShowRepositoryImpl(
-            tvShowCacheDataSource,
-            tvShowsLocalDataSource,
-            tvShowsWebDataSource
-        )
-        val getTVShowsUseCase = GetTVShowUseCase(tvShowRepository)
-        val updateTvShowUseCase = UpdateTVShowUseCase(tvShowRepository)
-
-        Log.i("TVShowTAG", "onCreate: Staring...")
-
-/*//        CoroutineScope(IO).launch {
-//            val listType = TVShowListType.TOP_RATED
-//
-//            Log.i("TVShowTAG", "ListType: ${listType.name}")
-//
-//            //Testing
-//            getTVShowsUseCase.execute(listType).collect {
-//                Log.i("TVShowTAG", "${listType}: $it")
-//            }
-//
-//            delay(3000)
-//
-//            //Testing
-//            getTVShowsUseCase.execute(listType).collect {
-//                Log.i("TVShowTAG", "${listType}: $it")
-//            }
-//
-//            delay(3000)
-//
-//            //Testing
-//            updateTvShowUseCase.execute(listType).collect {
-//                Log.i("TVShowTAG", "${listType}: $it")
-//            }
-//
-//        }*/
-
-        //ViewModel Factory
-        factory = ViewModelFactory(
-            application, getMoviesListUseCase, updateMoviesListUseCase, getTVShowsUseCase,
-            updateTvShowUseCase
-        )
-
         //ViewModel
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         //Testing livedata
-        viewModel.updateTVShowsList(TVShowListType.TOP_RATED).observe(this@MainActivity) {
-            Log.i("MovieTAG", "${it.tvShowListType}: ${it.list}")
+        viewModel.getMoviesList(MovieListType.POPULAR).observe(this@MainActivity) {
+            Log.i("MovieTAG", "${it.movieListType}: ${it.list}")
         }
 
         //Fragments
@@ -147,6 +79,8 @@ class MainActivity : AppCompatActivity() {
 
         val fr = supportFragmentManager.beginTransaction()
 
+        Log.i("MovieTAG", "Selecting Fragment")
+
         var fragment = fragments[index]
         if (fragment == null) {
             fragment = if (index == 0)
@@ -155,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                 TVShowFragment()
         }
 
-        val startTime = System.currentTimeMillis()
         //Change UI
         if (selectedFragment != -1) {
             if (index == 0) {
