@@ -8,6 +8,7 @@ import com.example.moviestv.data.model.tv_show.TVShow
 
 @Database(
     entities = [Movie::class, TVShow::class],
+    exportSchema = false,
     version = 1,
 )
 abstract class MyDatabase : RoomDatabase() {
