@@ -9,6 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.liveData
 import com.example.moviestv.data.list_types.MovieListType
 import com.example.moviestv.data.list_types.TVShowListType
+import com.example.moviestv.data.model.movie.Movie
+import com.example.moviestv.data.model.tv_show.TVShow
 import com.example.moviestv.domain.use_cases.movie.GetMoviesListUseCase
 import com.example.moviestv.domain.use_cases.movie.UpdateMoviesListUseCase
 import com.example.moviestv.domain.use_cases.tv_shows.GetTVShowUseCase
@@ -24,30 +26,46 @@ class MainViewModel(
     private val updateTVShowsUseCase: UpdateTVShowUseCase
 ) : AndroidViewModel(app) {
     fun getMoviesList(movieListType: MovieListType) = liveData {
-        getMoviesListUseCase.execute(movieListType).collect {
-            val data = MovieData(movieListType, it)
-            emit(data)
+        try {
+            getMoviesListUseCase.execute(movieListType).collect {
+                emit(it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(listOf<Movie>())
         }
     }
 
     fun getTVShowsList(tvShowListType: TVShowListType) = liveData {
-        getTVShowsUseCase.execute(tvShowListType).collect {
-            val data = TVShowsData(tvShowListType, it)
-            emit(data)
+        try {
+            getTVShowsUseCase.execute(tvShowListType).collect {
+                emit(it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(listOf<TVShow>())
         }
     }
 
     fun updateMoviesList(movieListType: MovieListType) = liveData {
-        updateMoviesListUseCase.execute(movieListType).collect {
-            val data = MovieData(movieListType, it)
-            emit(data)
+        try {
+            updateMoviesListUseCase.execute(movieListType).collect {
+                emit(it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(listOf<Movie>())
         }
     }
 
     fun updateTVShowsList(tvShowListType: TVShowListType) = liveData {
-        updateTVShowsUseCase.execute(tvShowListType).collect {
-            val data = TVShowsData(tvShowListType, it)
-            emit(data)
+        try {
+            updateTVShowsUseCase.execute(tvShowListType).collect {
+                emit(it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(listOf<TVShow>())
         }
     }
 

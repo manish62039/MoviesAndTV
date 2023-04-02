@@ -43,12 +43,11 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var selectedFragment = -1
-    private var fragments = arrayOfNulls<Fragment>(2)
 
     @Inject
     lateinit var factory: ViewModelFactory
 
-    private lateinit var viewModel: MainViewModel
+    lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,9 +58,9 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         //Testing livedata
-        viewModel.getMoviesList(MovieListType.POPULAR).observe(this@MainActivity) {
-            Log.i("MovieTAG", "${it.movieListType}: ${it.list}")
-        }
+//        viewModel.getMoviesList(MovieListType.POPULAR).observe(this@MainActivity) {
+//            Log.i("MovieTAG", "${it.movieListType}: ${it.list}")
+//        }
 
         //Fragments
         binding.moviesMenu.setOnClickListener {
@@ -81,13 +80,10 @@ class MainActivity : AppCompatActivity() {
 
         Log.i("MovieTAG", "Selecting Fragment")
 
-        var fragment = fragments[index]
-        if (fragment == null) {
-            fragment = if (index == 0)
-                MovieFragment()
-            else
-                TVShowFragment()
-        }
+        val fragment = if (index == 0)
+            MovieFragment()
+        else
+            TVShowFragment()
 
         //Change UI
         if (selectedFragment != -1) {
@@ -101,7 +97,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         fr.replace(R.id.fragment_container_view, fragment).commit()
-        fragments[index] = fragment
         selectedFragment = index
     }
 

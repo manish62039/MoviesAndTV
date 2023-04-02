@@ -2,4 +2,11 @@
     <string name="app_name">Movies &amp; TV</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="movies_amp_tv"><![CDATA[Movies & TV]]></string>
+    <string name="upcoming">Upcoming</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="popular">Popular</string>
+    <string name="pushpa">Pushpa</string>
+    <string name="this_is_a_test_movie_name_of_two_lines">This is a test movie name of two lines</string>
 </resources>

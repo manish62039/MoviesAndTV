@@ -1,60 +1,128 @@
 package com.example.moviestv.presentation.fragments
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.moviestv.presentation.activities.DetailsActivity
 import com.example.moviestv.R
+import com.example.moviestv.data.list_types.TVShowListType
+import com.example.moviestv.databinding.FragmentTVShowBinding
+import com.example.moviestv.presentation.activities.MainActivity
+import com.example.moviestv.presentation.adapter.TVShowsAdapter
+import com.example.moviestv.presentation.viewmodels.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [TVShowFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class TVShowFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentTVShowBinding
+    private lateinit var viewModel: MainViewModel
+    private var map = HashMap<TVShowListType, TVShowsAdapter>()
+    private var queuesList = arrayListOf<TVShowListType>()
+    private var testingQueue = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_t_v_show, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TVShowFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TVShowFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentTVShowBinding.bind(view)
+
+        viewModel = (activity as MainActivity).viewModel
+
+        queuesList.clear()
+        getList(TVShowListType.POPULAR, binding.RVPopular)
+        getList(TVShowListType.TOP_RATED, binding.RVTopRated)
+
+
+        binding.refreshBtn.setOnClickListener {
+            queuesList.clear()
+            testingQueue = false
+
+            binding.contentLayout.visibility = RecyclerView.INVISIBLE
+            binding.pbLayout.visibility = RecyclerView.VISIBLE
+
+            updateList(TVShowListType.POPULAR)
+            updateList(TVShowListType.TOP_RATED)
+        }
+    }
+
+    private fun getList(tvShowListType: TVShowListType, recyclerView: RecyclerView) {
+        queuesList.add(tvShowListType)
+
+        viewModel.getTVShowsList(tvShowListType).observe(viewLifecycleOwner) {
+            Log.i("TVShowTAG", "getList: $tvShowListType -> $it")
+
+            var adapter = map[tvShowListType]
+            if (adapter == null) {
+                adapter = TVShowsAdapter()
+                adapter.setClickListener { tvShow ->
+                    Log.i("TVShowTAG", "getList: OnClicked: $tvShow")
+                    val intent = Intent(context, DetailsActivity::class.java)
+                    intent.putExtra("tv_show", tvShow)
+                    startActivity(intent)
                 }
             }
+            adapter.differ.submitList(it)
+
+            recyclerView.layoutManager =
+                LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            recyclerView.adapter = adapter
+
+            map[tvShowListType] = adapter
+
+            queuesList.remove(tvShowListType)
+            checkIfCompletes()
+
+        }
     }
+
+    private fun updateList(tvShowListType: TVShowListType) {
+        queuesList.add(tvShowListType)
+
+        viewModel.updateTVShowsList(tvShowListType).observe(viewLifecycleOwner) {
+            Log.i("TVShowTAG", "getList: $tvShowListType -> $it")
+
+            val adapter = map[tvShowListType]
+
+            adapter?.differ?.submitList(it)
+
+            map[tvShowListType] = adapter!!
+
+            queuesList.remove(tvShowListType)
+            checkIfCompletes()
+
+        }
+    }
+
+    private fun checkIfCompletes() {
+        if (testingQueue)
+            return
+
+        testingQueue = true
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(500)
+
+            if (queuesList.isEmpty()) {
+                Log.i("MovieTAG", "checkIfCompletes: Completed!")
+                binding.contentLayout.visibility = RecyclerView.VISIBLE
+                binding.pbLayout.visibility = RecyclerView.INVISIBLE
+            }
+
+            testingQueue = false
+        }
+    }
+
 }

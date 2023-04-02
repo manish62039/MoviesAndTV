@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".presentation.MyApp"
+        android:name=".presentation.utils.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,6 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoviesTV"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.activities.DetailsActivity"
+            android:theme="@style/Theme.MoviesTVDeails"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".presentation.activities.MainActivity"
             android:exported="true">

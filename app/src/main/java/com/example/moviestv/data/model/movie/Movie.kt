@@ -1,6 +1,7 @@
 package com.example.moviestv.data.model.movie
 
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -38,4 +39,4 @@ data class Movie(
     @SerializedName("list_type")
     @ColumnInfo(name = "list_type")
     var listType: String?
-)
+):java.io.Serializable

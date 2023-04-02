@@ -34,4 +34,4 @@ data class TVShow(
     @SerializedName("list_type")
     @ColumnInfo(name = "list_type")
     var listType: String?
-)
+):java.io.Serializable
