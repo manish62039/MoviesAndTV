@@ -3,6 +3,7 @@ package com.example.moviestv.presentation.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.moviestv.R
 import com.example.moviestv.data.model.movie.Movie
@@ -41,7 +42,8 @@ class DetailsActivity : AppCompatActivity() {
 
             binding.txtTitle.text = movie.title
             binding.txtReleaseDate.text = movie.releaseDate
-            binding.txtVoteAverage.text = movie.voteAverage.toString()
+            val voteAverage = "${movie.voteAverage} / 10"
+            binding.txtVoteAverage.text = voteAverage
             binding.txtVoteCount.text = movie.voteCount.toString()
             binding.txtOverview.text = movie.overview
 

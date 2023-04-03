@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
@@ -29,6 +30,7 @@ class MovieFragment : Fragment() {
     private var map = HashMap<MovieListType, MoviesAdapter>()
     private var queuesList = arrayListOf<MovieListType>()
     private var testingQueue = false
+    private var lastUpdateTime = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,16 +52,23 @@ class MovieFragment : Fragment() {
         getList(MovieListType.UPCOMING, binding.RVUpcoming)
 
         binding.refreshBtn.setOnClickListener {
-            queuesList.clear()
-            testingQueue = false
+            val time = System.currentTimeMillis() - lastUpdateTime
+            if (time > 5000) {
+                queuesList.clear()
+                testingQueue = false
 
-            binding.contentLayout.visibility = INVISIBLE
-            binding.pbLayout.visibility = VISIBLE
+                binding.contentLayout.visibility = INVISIBLE
+                binding.pbLayout.visibility = VISIBLE
 
-            updateList(MovieListType.POPULAR)
-            updateList(MovieListType.TOP_RATED)
-            updateList(MovieListType.NOW_PLAYING)
-            updateList(MovieListType.UPCOMING)
+                updateList(MovieListType.POPULAR)
+                updateList(MovieListType.TOP_RATED)
+                updateList(MovieListType.NOW_PLAYING)
+                updateList(MovieListType.UPCOMING)
+
+                lastUpdateTime = System.currentTimeMillis()
+            } else {
+                Toast.makeText(context, "Already Updated", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -116,7 +125,7 @@ class MovieFragment : Fragment() {
 
         testingQueue = true
         CoroutineScope(Dispatchers.Main).launch {
-            delay(500)
+            delay(100)
 
             if (queuesList.isEmpty()) {
                 Log.i("MovieTAG", "checkIfCompletes: Completed!")

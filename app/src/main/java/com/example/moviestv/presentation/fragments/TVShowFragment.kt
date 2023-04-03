@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviestv.presentation.activities.DetailsActivity
@@ -28,6 +29,7 @@ class TVShowFragment : Fragment() {
     private var map = HashMap<TVShowListType, TVShowsAdapter>()
     private var queuesList = arrayListOf<TVShowListType>()
     private var testingQueue = false
+    private var lastUpdateTime = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,14 +50,21 @@ class TVShowFragment : Fragment() {
 
 
         binding.refreshBtn.setOnClickListener {
-            queuesList.clear()
-            testingQueue = false
+            val time = System.currentTimeMillis() - lastUpdateTime
+            if (time > 5000) {
+                queuesList.clear()
+                testingQueue = false
 
-            binding.contentLayout.visibility = RecyclerView.INVISIBLE
-            binding.pbLayout.visibility = RecyclerView.VISIBLE
+                binding.contentLayout.visibility = RecyclerView.INVISIBLE
+                binding.pbLayout.visibility = RecyclerView.VISIBLE
 
-            updateList(TVShowListType.POPULAR)
-            updateList(TVShowListType.TOP_RATED)
+                updateList(TVShowListType.POPULAR)
+                updateList(TVShowListType.TOP_RATED)
+
+                lastUpdateTime = System.currentTimeMillis()
+            }else {
+                Toast.makeText(context, "Already Updated", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -113,7 +122,7 @@ class TVShowFragment : Fragment() {
 
         testingQueue = true
         CoroutineScope(Dispatchers.Main).launch {
-            delay(500)
+            delay(100)
 
             if (queuesList.isEmpty()) {
                 Log.i("MovieTAG", "checkIfCompletes: Completed!")
