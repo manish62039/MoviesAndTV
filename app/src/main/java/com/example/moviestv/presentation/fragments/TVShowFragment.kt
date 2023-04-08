@@ -1,5 +1,6 @@
 package com.example.moviestv.presentation.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.moviestv.presentation.activities.DetailsActivity
@@ -16,6 +18,7 @@ import com.example.moviestv.data.list_types.TVShowListType
 import com.example.moviestv.databinding.FragmentTVShowBinding
 import com.example.moviestv.presentation.activities.MainActivity
 import com.example.moviestv.presentation.adapter.TVShowsAdapter
+import com.example.moviestv.presentation.utils.Utilities
 import com.example.moviestv.presentation.viewmodels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +33,12 @@ class TVShowFragment : Fragment() {
     private var queuesList = arrayListOf<TVShowListType>()
     private var testingQueue = false
     private var lastUpdateTime = 0L
+    private lateinit var mContext: Context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,12 +53,24 @@ class TVShowFragment : Fragment() {
 
         viewModel = (activity as MainActivity).viewModel
 
-        queuesList.clear()
-        getList(TVShowListType.POPULAR, binding.RVPopular)
-        getList(TVShowListType.TOP_RATED, binding.RVTopRated)
-
-
+        getAllLists()
         binding.refreshBtn.setOnClickListener {
+            updateAllLists()
+        }
+    }
+
+    private fun getAllLists() {
+        if (Utilities.isNetworkAvailable(mContext)) {
+            queuesList.clear()
+            getList(TVShowListType.POPULAR, binding.RVPopular)
+            getList(TVShowListType.TOP_RATED, binding.RVTopRated)
+        } else {
+            selectNoInterNetFragment()
+        }
+    }
+
+    private fun updateAllLists() {
+        if (Utilities.isNetworkAvailable(mContext)) {
             val time = System.currentTimeMillis() - lastUpdateTime
             if (time > 5000) {
                 queuesList.clear()
@@ -62,9 +83,11 @@ class TVShowFragment : Fragment() {
                 updateList(TVShowListType.TOP_RATED)
 
                 lastUpdateTime = System.currentTimeMillis()
-            }else {
+            } else {
                 Toast.makeText(context, "Already Updated", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            selectNoInterNetFragment()
         }
     }
 
@@ -132,6 +155,15 @@ class TVShowFragment : Fragment() {
 
             testingQueue = false
         }
+    }
+
+    private fun selectNoInterNetFragment() {
+        val fragmentActivity = mContext as FragmentActivity
+        val fr = fragmentActivity.supportFragmentManager.beginTransaction()
+
+        val noInternetFragment = NoInternetFragment.newInstance(1)
+        fr.replace(R.id.fragment_container_view, noInternetFragment)
+            .addToBackStack(null).commit()
     }
 
 }

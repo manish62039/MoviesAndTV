@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        fr.replace(R.id.fragment_container_view, fragment).commit()
+        fr.replace(R.id.fragment_container_view, fragment).addToBackStack(null).commit()
         selectedFragment = index
     }
 

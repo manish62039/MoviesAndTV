@@ -10,4 +10,6 @@
     <string name="pushpa">Pushpa</string>
     <string name="this_is_a_test_movie_name_of_two_lines">This is a test movie name of two lines</string>
     <string name="developed_by_manish">Developed by Manish</string>
+    <string name="very_slow_or_no_internet_available_please_check_your_internet_connection">Very Slow or no Internet Available. Please Check your Internet Connection</string>
+    <string name="try_again">Try Again</string>
 </resources>

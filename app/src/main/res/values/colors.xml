@@ -11,4 +11,6 @@
     <color name="toolbar_bg">#D1D1D1</color>
     <color name="status_color">#BCBCBC</color>
     <color name="placeholder_bg">#535151</color>
+    
+    <color name="btn_color">#1EB1ED</color>
 </resources>

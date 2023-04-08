@@ -1,5 +1,6 @@
 package com.example.moviestv.presentation.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
@@ -17,6 +19,7 @@ import com.example.moviestv.data.list_types.MovieListType
 import com.example.moviestv.databinding.FragmentMovieBinding
 import com.example.moviestv.presentation.activities.MainActivity
 import com.example.moviestv.presentation.adapter.MoviesAdapter
+import com.example.moviestv.presentation.utils.Utilities
 import com.example.moviestv.presentation.viewmodels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +34,12 @@ class MovieFragment : Fragment() {
     private var queuesList = arrayListOf<MovieListType>()
     private var testingQueue = false
     private var lastUpdateTime = 0L
+    private lateinit var mContext: Context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,13 +54,27 @@ class MovieFragment : Fragment() {
 
         viewModel = (activity as MainActivity).viewModel
 
-        queuesList.clear()
-        getList(MovieListType.POPULAR, binding.RVPopular)
-        getList(MovieListType.TOP_RATED, binding.RVTopRated)
-        getList(MovieListType.NOW_PLAYING, binding.RVNowPlaying)
-        getList(MovieListType.UPCOMING, binding.RVUpcoming)
+        getAllLists()
 
         binding.refreshBtn.setOnClickListener {
+            updateAllLists()
+        }
+    }
+
+    private fun getAllLists() {
+        if (Utilities.isNetworkAvailable(mContext)) {
+            queuesList.clear()
+            getList(MovieListType.POPULAR, binding.RVPopular)
+            getList(MovieListType.TOP_RATED, binding.RVTopRated)
+            getList(MovieListType.NOW_PLAYING, binding.RVNowPlaying)
+            getList(MovieListType.UPCOMING, binding.RVUpcoming)
+        } else {
+            selectNoInterNetFragment()
+        }
+    }
+
+    private fun updateAllLists() {
+        if (Utilities.isNetworkAvailable(mContext)) {
             val time = System.currentTimeMillis() - lastUpdateTime
             if (time > 5000) {
                 queuesList.clear()
@@ -69,6 +92,8 @@ class MovieFragment : Fragment() {
             } else {
                 Toast.makeText(context, "Already Updated", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            selectNoInterNetFragment()
         }
     }
 
@@ -135,6 +160,15 @@ class MovieFragment : Fragment() {
 
             testingQueue = false
         }
+    }
+
+    private fun selectNoInterNetFragment() {
+        val fragmentActivity = mContext as FragmentActivity
+        val fr = fragmentActivity.supportFragmentManager.beginTransaction()
+
+        val noInternetFragment = NoInternetFragment.newInstance(0)
+        fr.replace(R.id.fragment_container_view, noInternetFragment)
+            .addToBackStack(null).commit()
     }
 
 }
